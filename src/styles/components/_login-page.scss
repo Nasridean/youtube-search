@@ -1,0 +1,21 @@
+.login-page {
+	align-items: center;
+	display: flex;
+	justify-content: center;
+	width: 100vw;
+	height: 100vh;
+}
+.login-form {
+  max-width: 510px;
+  max-height: 520px;
+  background-color: white;
+  .input {
+  	max-width: 334px;
+  }
+}
+.login-form-forgot {
+  float: right;
+}
+.login-form-button {
+  width: 100%;
+}

@@ -1,17 +1,43 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import { Provider } from 'react-redux';
+import 'antd/dist/antd.css';
+import jwt from 'jsonwebtoken';
+import configureStore from './store/configureStore';
+import AppRouter, { history } from './routers/AppRouter';
+import { login, logout } from './actions/auth';
+import './styles/styles.scss';
+import LoadingPage from './components/LoadingPage';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+const store = configureStore();
+const jsx = (
+    <Provider store = {store}>
+        <AppRouter />
+    </Provider>
+)
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+let hasRendered = false;
+const renderApp = () => {
+    if (!hasRendered) {
+            ReactDOM.render(jsx, document.getElementById('root'));
+            hasRendered = true;
+    }
+};
+ReactDOM.render( <LoadingPage />, document.getElementById('root'));
+const handleUser = () => {
+    if (localStorage.getItem('token')) {
+        console.log('gotToken')
+        const decoded = jwt.verify(localStorage.getItem('token'), 'secret');
+        store.dispatch(login(decoded.email));
+            renderApp();
+            if (history.location.pathname === '/') {
+                history.push('/dashboard');
+            }
+    } else {
+        store.dispatch(logout());
+        renderApp();
+        history.push('/');
+    }
+}
+handleUser();
+window.onstorage = handleUser;
